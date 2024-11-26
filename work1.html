@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบทดสอบวิทยาศาสตร์</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <style>
+        /* กำหนดสีโทนเย็น */
+        body {
+            background-color: #f0f4f8; /* ฟ้าเทาอ่อน */
+            color: #1a1a1a; /* ดำ */
+        }
+        h1, h5 {
+            color: #003366; /* น้ำเงินเข้ม */
+        }
+        .btn-primary {
+            background-color: #00509e; /* น้ำเงินเข้ม */
+            border-color: #004080; /* น้ำเงินเข้ม */
+        }
+        .btn-primary:hover {
+            background-color: #004080; /* น้ำเงินเข้มเข้มขึ้น */
+        }
+        .btn-success {
+            background-color: #007bff; /* ฟ้า */
+            border-color: #0056b3; /* ฟ้าเข้ม */
+        }
+        .btn-success:hover {
+            background-color: #0056b3; /* ฟ้าเข้มขึ้น */
+        }
+        .card {
+            background-color: #e9f1f7; /* ฟ้าเทา */
+            border: 1px solid #d1e7f0; /* ฟ้าอ่อน */
+        }
+        .form-check-label {
+            color: #003366; /* น้ำเงินเข้ม */
+        }
+        .card-title {
+            color: #003366; /* น้ำเงินเข้ม */
+        }
+        .text-danger {
+            color: #d9534f !important; /* สีแดงสำหรับคำตอบผิด */
+        }
+        .text-success {
+            color: #28a745 !important; /* สีเขียวสำหรับคำตอบถูก */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <!-- หน้าเริ่มต้น -->
+            <div id="startPage" class="col-12 text-center my-5">
+                <h1>แบบทดสอบวิชาวิทยาศาสตร์</h1>
+                <p>ทดสอบความรู้พื้นฐานเกี่ยวกับวิทยาศาสตร์</p>
+                <button id="startQuiz" class="btn btn-primary">เริ่มทำแบบทดสอบ</button>
+            </div>
+            
+            <!-- หน้าข้อสอบ -->
+            <div id="quizPage" class="col-12 my-5" style="display: none;">
+                <div id="quizContainer"></div>
+                <button id="submitQuiz" class="btn btn-success mt-4" style="display: none;">ตรวจคำตอบ</button>
+            </div>
+
+            <!-- หน้าผลลัพธ์ -->
+            <div id="resultPage" class="col-12 text-center my-5" style="display: none;">
+                <h1>ผลการทดสอบ</h1>
+                <p id="scoreResult"></p>
+                <div id="answerDetails" class="text-start mt-4"></div> <!-- ส่วนแสดงเฉลย -->
+                <button onclick="location.reload()" class="btn btn-primary mt-4">ทำใหม่อีกครั้ง</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            let quizData = [];
+            let userAnswers = [];
+
+            // โหลดข้อสอบจากไฟล์ JSON
+            $.getJSON("quiz.json", function (data) {
+                quizData = data;
+            });
+
+            // เริ่มทำแบบทดสอบ
+            $("#startQuiz").click(function () {
+                $("#startPage").hide();
+                $("#quizPage").show();
+                displayQuiz();
+            });
+
+            // แสดงข้อสอบ
+            function displayQuiz() {
+                $("#quizContainer").empty();
+                quizData.forEach((quiz, index) => {
+                    let questionHTML = `
+                        <div class="card my-3">
+                            <div class="card-body">
+                                <h5 class="card-title">ข้อ ${index + 1}: ${quiz.title}</h5>
+                                ${quiz.options.map((option, optIndex) => `
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="q${index}" value="${optIndex + 1}">
+                                        <label class="form-check-label">${option}</label>
+                                    </div>
+                                `).join("")}
+                            </div>
+                        </div>`;
+                    $("#quizContainer").append(questionHTML);
+                });
+
+                // แสดงปุ่มตรวจคำตอบเมื่อทำครบ
+                $("#submitQuiz").show();
+            }
+
+            // ตรวจคำตอบ
+            $("#submitQuiz").click(function () {
+                userAnswers = quizData.map((quiz, index) => {
+                    return $(`input[name='q${index}']:checked`).val();
+                });
+
+                // ตรวจคำตอบและคำนวณคะแนน
+                let score = 0;
+                let answerDetailsHTML = ""; // HTML สำหรับแสดงเฉลย
+
+                userAnswers.forEach((answer, index) => {
+                    let correctAnswer = quizData[index].answer;
+                    let isCorrect = parseInt(answer) === correctAnswer;
+
+                    // เพิ่มคะแนนหากตอบถูก
+                    if (isCorrect) {
+                        score++;
+                    }
+
+                    // เพิ่มข้อมูลเฉลย
+                    answerDetailsHTML += `
+                        <div class="card my-3">
+                            <div class="card-body">
+                                <h5 class="card-title">ข้อ ${index + 1}: ${quizData[index].title}</h5>
+                                <p>คำตอบของคุณ: 
+                                    <span class="${isCorrect ? 'text-success' : 'text-danger'}">
+                                        ${quizData[index].options[answer - 1] || "ไม่ได้ตอบ"}
+                                    </span>
+                                </p>
+                                <p>คำตอบที่ถูกต้อง: 
+                                    <span class="text-success">${quizData[index].options[correctAnswer - 1]}</span>
+                                </p>
+                            </div>
+                        </div>`;
+                });
+
+                // แสดงคะแนนและเฉลย
+                $("#quizPage").hide();
+                $("#resultPage").show();
+                $("#scoreResult").text(`คุณได้คะแนน ${score}/${quizData.length}`);
+                $("#answerDetails").html(answerDetailsHTML); // ใส่เฉลยลงในหน้าเว็บ
+            });
+        });
+    </script>
+</body>
+</html>
