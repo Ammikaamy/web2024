@@ -26,7 +26,24 @@ class App extends React.Component {
         </Card>          
       );
     }      
+const firebaseConfig = {
+    apiKey: "...",
+    authDomain: "...",
+    projectId: "...",
+    storageBucket: "...",
+    messagingSenderId: "..",
+    appId: "...",
+    measurementId: "..."
+  };
+firebase.initializeApp(firebaseConfig);      
+const db = firebase.firestore();
+db.collection("students").get().then((querySnapshot) => {
+  querySnapshot.forEach((doc) => {
+      console.log(`${doc.id} =>`,doc.data());
+  });
+});
   }
+
 
 
   const container = document.getElementById("myapp");
