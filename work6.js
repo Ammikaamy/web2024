@@ -1,31 +1,4 @@
-const RB=ReactBootstrap;
-const {Alert, Card, Button, Table} = ReactBootstrap;
 
-
-class App extends React.Component {
-    title = (
-      <Alert variant="info">
-        <b>Work6 :</b> Firebase
-      </Alert>
-    );
-    footer = (
-      <div>
-        By xxxxxxxxxx-x xxxxxxxxxxxxx xxxxxxxxxxxxxx <br />
-        College of Computing, Khon Kaen University
-      </div>
-    );
-    state = {
-        scene: 0,
-    }      
-    render() {
-      return (
-        <Card>
-          <Card.Header>{this.title}</Card.Header>  
-          <Card.Body></Card.Body>
-          <Card.Footer>{this.footer}</Card.Footer>
-        </Card>          
-      );
-    }      
 const firebaseConfig = {
   apiKey: "AIzaSyDOHna1KebH_Yrv5q9WUEw7_zkfTpx1cBQ",
   authDomain: "web2567-a5441.firebaseapp.com",
