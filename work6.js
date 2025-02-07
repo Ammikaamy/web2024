@@ -8,18 +8,7 @@ const firebaseConfig = {
   appId: "1:738533559337:web:7a5ecae9fe687c1960a038",
   measurementId: "G-784M00GQML"
 };
-firebase.initializeApp(firebaseConfig);      
-const db = firebase.firestore();
-db.collection("students").get().then((querySnapshot) => {
-  querySnapshot.forEach((doc) => {
-      console.log(`${doc.id} =>`,doc.data());
-  });
-});
-  }
 
-
-
-  const container = document.getElementById("myapp");
-  const root = ReactDOM.createRoot(container);
-  root.render(<App />);
-
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
