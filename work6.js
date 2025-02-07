@@ -1,21 +1,170 @@
-<!DOCTYPE html>
-<html lang="th">
-  <head>
-    <script src="https://cdn.jsdelivr.net/npm/react/umd/react.production.min.js" crossorigin></script>
-    <script src="https://cdn.jsdelivr.net/npm/react-dom/umd/react-dom.production.min.js"  crossorigin></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
-      crossorigin="anonymous"
-    />
-    <script src="https://cdn.jsdelivr.net/npm/react-bootstrap@next/dist/react-bootstrap.min.js"  crossorigin></script>
-  </head>
-  <body>
-    <div id="myapp" class="container p-4"></div>    
-    <script type="text/babel" src="work6.js"></script>
-  </body>
-</html>
+const RB = ReactBootstrap;
+const { Alert, Card, Button, Table } = ReactBootstrap;
+
+
+class App extends React.Component {
+    title = (
+        <Alert variant="info">
+            <b>Work6 :</b> Firebase
+        </Alert>
+    );
+    footer = (
+        <div>
+            By เอมมิกา โยหา 653380356-3 <br />
+            College of Computing, Khon Kaen University
+        </div>
+    );
+    state = {
+        scene: 0,
+        students: [],
+        stdid: "",
+        stdtitle: "",
+        stdfname: "",
+        stdlname: "",
+        stdemail: "",
+        stdphone: "",
+    }
+
+    render() {
+        // var stext = JSON.stringify(this.state.students);  
+        return (
+            <Card>
+                <Card.Header>{this.title}</Card.Header>
+                <Card.Body>
+                    <Button onClick={() => this.readData()}>Read Data</Button>
+                    <Button onClick={() => this.autoRead()}>Auto Read</Button>
+                    <div>
+                        <StudentTable data={this.state.students} app={this} />
+                    </div>
+                </Card.Body>
+                <Card.Footer>
+                    <b>เพิ่ม/แก้ไขข้อมูล นักศึกษา :</b><br />
+                    <TextInput label="ID" app={this} value="stdid" style={{ width: 120 }} />
+                    <TextInput label="คำนำหน้า" app={this} value="stdtitle" style={{ width: 100 }} />
+                    <TextInput label="ชื่อ" app={this} value="stdfname" style={{ width: 120 }} />
+                    <TextInput label="สกุล" app={this} value="stdlname" style={{ width: 120 }} />
+                    <TextInput label="Email" app={this} value="stdemail" style={{ width: 150 }} />
+                    <TextInput label="Phone" app={this} value="stdphone" style={{ width: 120 }} />
+                    <Button onClick={() => this.insertData()}>Save</Button>
+                </Card.Footer>
+                <Card.Footer>{this.footer}</Card.Footer>
+            </Card>
+        );
+    }
+
+
+    readData() {
+        db.collection("students").get().then((querySnapshot) => {
+            var stdlist = [];
+            querySnapshot.forEach((doc) => {
+                stdlist.push({ id: doc.id, ...doc.data() });
+            });
+            console.log(stdlist);
+            this.setState({ students: stdlist });
+        });
+    }
+    autoRead() {
+        db.collection("students").onSnapshot((querySnapshot) => {
+            var stdlist = [];
+            querySnapshot.forEach((doc) => {
+                stdlist.push({ id: doc.id, ...doc.data() });
+            });
+            this.setState({ students: stdlist });
+        });
+    }
+    insertData() {
+        db.collection("students").doc(this.state.stdid).set({
+            title: this.state.stdtitle,
+            fname: this.state.stdfname,
+            lname: this.state.stdlname,
+            phone: this.state.stdphone,
+            email: this.state.stdemail,
+        });
+    }
+
+    edit(std) {
+        this.setState({
+            stdid: std.id,
+            stdtitle: std.title,
+            stdfname: std.fname,
+            stdlname: std.lname,
+            stdemail: std.email,
+            stdphone: std.phone,
+        })
+    }
+    delete(std) {
+        if (confirm("ต้องการลบข้อมูล")) {
+            db.collection("students").doc(std.id).delete();
+        }
+    }
+
+
+
+
+}
+function StudentTable({data, app}){
+    return <table className='table'>
+    <tr>
+        <td>รหัส</td>
+        <td>คำนำหน้า</td>
+        <td>ชื่อ</td>
+        <td>สกุล</td>
+        <td>email</td>
+        </tr>
+        {
+          data.map((s)=><tr>
+          <td>{s.id}</td>
+          <td>{s.title}</td>
+          <td>{s.fname}</td>
+          <td>{s.lname}</td>
+          <td>{s.email}</td>
+          <td><EditButton std={s} app={app}/></td>
+          <td><DeleteButton std={s} app={app}/></td>        
+          </tr> )
+        }
+    </table>
+  }
+
+
+function TextInput({ label, app, value, style }) {
+    return <label className="form-label">
+        {label}:
+        <input className="form-control" style={style}
+            value={app.state[value]} onChange={(ev) => {
+                var s = {};
+                s[value] = ev.target.value;
+                app.setState(s)
+            }
+            }></input>
+    </label>;
+}
+function EditButton({ std, app }) {
+    return <button onClick={() => app.edit(std)}>แก้ไข</button>
+}
+function DeleteButton({std,app}){    
+    return <button onClick={()=>app.delete(std)}>ลบ</button>
+  }
+
+
+  const firebaseConfig = {
+  apiKey: "AIzaSyDOHna1KebH_Yrv5q9WUEw7_zkfTpx1cBQ",
+  authDomain: "web2567-a5441.firebaseapp.com",
+  projectId: "web2567-a5441",
+  storageBucket: "web2567-a5441.firebasestorage.app",
+  messagingSenderId: "738533559337",
+  appId: "1:738533559337:web:7a5ecae9fe687c1960a038",
+  measurementId: "G-784M00GQML"
+};
+
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+//db.collection("students").get().then((querySnapshot) => {
+//querySnapshot.forEach((doc) => {
+//   console.log(`${doc.id} =>`,doc.data());
+//  });
+//});
+
+const container = document.getElementById("myapp");
+const root = ReactDOM.createRoot(container);
+root.render(<App />);
