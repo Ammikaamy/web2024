@@ -1,14 +1,21 @@
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDOHna1KebH_Yrv5q9WUEw7_zkfTpx1cBQ",
-  authDomain: "web2567-a5441.firebaseapp.com",
-  projectId: "web2567-a5441",
-  storageBucket: "web2567-a5441.firebasestorage.app",
-  messagingSenderId: "738533559337",
-  appId: "1:738533559337:web:7a5ecae9fe687c1960a038",
-  measurementId: "G-784M00GQML"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/react/umd/react.production.min.js" crossorigin></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom/umd/react-dom.production.min.js"  crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/react-bootstrap@next/dist/react-bootstrap.min.js"  crossorigin></script>
+  </head>
+  <body>
+    <div id="myapp" class="container p-4"></div>    
+    <script type="text/babel" src="work6.js"></script>
+  </body>
+</html>
